@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * 
+ * Ip Restriction class.
  */
 class IpRestrictMiddleware
 {   
@@ -42,11 +42,14 @@ class IpRestrictMiddleware
     private $options = [];
     
     /**
-     * Class Construct method.
+     * Class Constructor method.
      * 
      * @param array $allowList
+     *   The allowed IP addresses.
      * @param bool $negate
+     *   Set to true if the allow list should be turned to disallow list.
      * @param array $options
+     *   Extra inputs like status code or exception messages.
      */
     public function __construct(array $allowList, $negate = false, array $options = [])
     {
@@ -56,11 +59,14 @@ class IpRestrictMiddleware
     }
     
     /**
-     * Example middleware invokable class
+     * IP Restriction Middleware call.
      *
-     * @param  \Psr\Http\Message\ServerRequestInterface $request  PSR7 request
-     * @param  \Psr\Http\Message\ResponseInterface      $response PSR7 response
-     * @param  callable                                 $next     Next middleware
+     * @param \Psr\Http\Message\ServerRequestInterface $request 
+     *   PSR7 request
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *   PSR7 response
+     * @param callable $next 
+     *   Next middleware
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -91,11 +97,31 @@ class IpRestrictMiddleware
     }
     
     /**
+     * Method implements the IP based access rule.
+     *
+     * @param string $clientIp
+     *   The client's IP address.
+     * @param \Psr\Http\Message\ServerRequestInterface $request 
+     *   PSR7 request
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *   PSR7 response
+     *
+     * @return bool
+     */
+    public function ipRestrict($clientIp, ServerRequestInterface $request, ResponseInterface $response)
+    {
+        
+    }
+    
+    /**
      * Read the accept header and determine which content type we know about
      * is wanted.
      *
-     * @param  string $acceptHeader Accept header from request
+     * @param string $acceptHeader 
+     *   Accept header from request
+     *
      * @return string
+     *   The HTTP header content type
      */
     private function determineContentType($acceptHeader)
     {
@@ -152,7 +178,7 @@ class IpRestrictMiddleware
             
             case 'application/xml':
                 $xml = new \SimpleXMLElement('<root/>');
-                $item = $xml->addChild('message', (array_key_exists('exception_message', $options) ? $options['exception_message'] : 'Forbidden'));
+                $xml->addChild('message', (array_key_exists('exception_message', $options) ? $options['exception_message'] : 'Forbidden'));
                 $message = $xml->asXML();
                 break;
             
@@ -163,3 +189,4 @@ class IpRestrictMiddleware
     }
     
 }
+
