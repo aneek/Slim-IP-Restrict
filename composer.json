@@ -19,7 +19,7 @@
     },
     "autoload": {
           "psr-4": {
-              "Slim\\IpRestrict\\": "./src"
+              "Aneek\\IpRestrict\\": "./src"
           }
       },
     "version": "1.x-dev"
