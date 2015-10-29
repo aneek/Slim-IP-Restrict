@@ -13,10 +13,11 @@ use Psr\Http\Message\ResponseInterface;
  * Ip Restriction class.
  */
 class IpRestrictMiddleware
-{   
+{
+
     /**
      * The allowed IP list.
-     * 
+     *
      * @var array
      */
     private $allowList = [];
@@ -25,7 +26,7 @@ class IpRestrictMiddleware
      * This flag turns the allowed IP list to disallow list.
      *
      * By default this is set as false so the middleware will allow only the given IPs.
-     * 
+     *
      * @var bool
      */
     private $negate = false;
@@ -36,14 +37,14 @@ class IpRestrictMiddleware
      * Available keys in this parameter:
      *   - exception_message: The exception message shown to end user.
      *   - error_code: The Http error code. Defaults to 403 Forbidden.
-     * 
+     *
      * @var array
      */
     private $options = [];
     
     /**
      * Class Constructor method.
-     * 
+     *
      * @param array $allowList
      *   The allowed IP addresses.
      * @param bool $negate
@@ -61,11 +62,11 @@ class IpRestrictMiddleware
     /**
      * IP Restriction Middleware call.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request 
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      *   PSR7 request
      * @param \Psr\Http\Message\ResponseInterface $response
      *   PSR7 response
-     * @param callable $next 
+     * @param callable $next
      *   Next middleware
      *
      * @return \Psr\Http\Message\ResponseInterface
@@ -89,7 +90,6 @@ class IpRestrictMiddleware
             // Proceed with the application access.
             return $response = $next($request, $response);
         }
-        
     }
     
     /**
@@ -120,7 +120,7 @@ class IpRestrictMiddleware
      * Read the accept header and determine which content type we know about
      * is wanted.
      *
-     * @param string $acceptHeader 
+     * @param string $acceptHeader
      *   Accept header from request
      *
      * @return string
@@ -142,10 +142,10 @@ class IpRestrictMiddleware
     
     /**
      * Method sets the HTTP status code when a IP is rejected.
-     * 
-     * @param type $options
+     *
+     * @param array $options
      *   The array of extra options provided in the Middleware call.
-     * 
+     *
      * @return int $code
      *   The HTTP status code.
      */
@@ -159,8 +159,10 @@ class IpRestrictMiddleware
     }
     
     /**
-     * Method sets a proper Exception message when a IP is rejected. 
+     * Method sets a proper Exception message when a IP is rejected.
      *
+     * @param string $contentType
+     *   The content type to set for the response.
      * @param array $options
      *   The array of extra options provided in the Middleware call.
      *
@@ -169,7 +171,6 @@ class IpRestrictMiddleware
      */
     protected function setExceptionMessage($contentType = 'application/json', array $options = [])
     {
-        $message = 'Forbidden';
         switch ($contentType) {
             case 'application/json':
                 $m = array_key_exists('exception_message', $options) ? $options['exception_message'] : 'Forbidden';
@@ -192,6 +193,4 @@ class IpRestrictMiddleware
         }
         return $message;
     }
-    
 }
-

@@ -23,14 +23,14 @@ class IpRestrictTest extends PHPUnit_Framework_TestCase
 {
     /**
      * The IP set for allowing or blocking the requests.
-     * 
+     *
      * @var array
      */
     private $ipSet = [];
     
     /**
      * The client machine IP.
-     * 
+     *
      * @var string
      */
     private $clientIp;
@@ -44,14 +44,14 @@ class IpRestrictTest extends PHPUnit_Framework_TestCase
     
     /**
      * The extra options to be provided in the middleware.
-     * 
-     * @var array 
+     *
+     * @var array
      */
     private $options = [];
     
     /**
      * The IpRestrictMiddleware class instance.
-     * 
+     *
      * @var \Aneek\IpRestrict\IpRestrictMiddleware
      */
     private $ipRestrictMiddleware;
@@ -279,7 +279,7 @@ class IpRestrictTest extends PHPUnit_Framework_TestCase
         
         $app->add(new IpRestrictMiddleware($this->ipSet, false, $this->options));
         $appMessage = 'I am In';
-        $app->get('/foo', function ($req, $res) use($appMessage) {
+        $app->get('/foo', function ($req, $res) use ($appMessage) {
             $res->write($appMessage);
             return $res;
         });
