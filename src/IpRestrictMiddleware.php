@@ -85,8 +85,7 @@ class IpRestrictMiddleware
         $restrict = $this->restrict($ip, $this->allowList, !$this->negate);
         if ($restrict === true) {
             return $response->withStatus($statusCode)->withHeader('Content-type', $contentType)->write($message);
-        }
-        else {
+        } else {
             // Proceed with the application access.
             return $response = $next($request, $response);
         }
@@ -110,11 +109,9 @@ class IpRestrictMiddleware
     {
         if ($allow && !in_array($clientIp, $ipSet)) {
             return true;
-        }
-        elseif (!$allow && in_array($clientIp, $ipSet)) {
+        } elseif (!$allow && in_array($clientIp, $ipSet)) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
