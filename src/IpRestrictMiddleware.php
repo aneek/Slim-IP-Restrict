@@ -74,43 +74,48 @@ class IpRestrictMiddleware
     {
         // Get client's IP.
         $ip = $request->getIp();
-        // Get the Content-Type set in the Request's Accept header.
+         // Get the Content-Type set in the Request's Accept header.
         $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
         // Desired status code to send.
         $statusCode = $this->setStatusCode($this->options);
         // Exception Message to send.
         $message = $this->setExceptionMessage($contentType, $this->options);
-        
-        if (!$this->negate && !array_key_exists($ip, $this->allowList)) {
-            // Allow only the given IPs if negate is false.
-            return $response->withStatus($statusCode)->withHeader('Content-type', $contentType)->write($message);
-        }
-        elseif ($this->negate && array_key_exists($ip, $this->allowList)) {
-            // Disallow only the given IPs if negate is true.
-            return $response->withStatus($statusCode)->withHeader('Content-type', $contentType)->write($message);
+        $restrict = $this->restrict($ip, $this->allowList, !$this->negate);
+        if ($restrict === true) {
+            $response->withStatus($statusCode)->withHeader('Content-type', $contentType)->write($message);
         }
         else {
             // Proceed with the application access.
             $response = $next($request, $response);
-            return $response;
         }
+        
+        return $response;
     }
     
     /**
-     * Method implements the IP based access rule.
+     * Method returns whether to allow or disallow the client's IP.
      *
      * @param string $clientIp
-     *   The client's IP address.
-     * @param \Psr\Http\Message\ServerRequestInterface $request 
-     *   PSR7 request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     *   PSR7 response
+     *   The client's ip address.
+     * @param array $ipSet
+     *   The given IP addresses set.
+     * @param bool $allow
+     *   The flag denotes whether to think the ip set array as a allowable or disallowable list.
      *
      * @return bool
+     *   Returns true if IP is not allowed else false.
      */
-    public function ipRestrict($clientIp, ServerRequestInterface $request, ResponseInterface $response)
+    public function restrict($clientIp, array $ipSet = [], $allow = true)
     {
-        
+        if ($allow && !in_array($clientIp, $ipSet)) {
+            return true;
+        }
+        elseif (!$allow && in_array($clientIp, $ipSet)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     
     /**
