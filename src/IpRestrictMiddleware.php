@@ -76,20 +76,21 @@ class IpRestrictMiddleware
         $ip = $request->getIp();
          // Get the Content-Type set in the Request's Accept header.
         $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
+        
         // Desired status code to send.
         $statusCode = $this->setStatusCode($this->options);
         // Exception Message to send.
         $message = $this->setExceptionMessage($contentType, $this->options);
+        // Restrict The IP access if needed.
         $restrict = $this->restrict($ip, $this->allowList, !$this->negate);
         if ($restrict === true) {
-            $response->withStatus($statusCode)->withHeader('Content-type', $contentType)->write($message);
+            return $response->withStatus($statusCode)->withHeader('Content-type', $contentType)->write($message);
         }
         else {
             // Proceed with the application access.
-            $response = $next($request, $response);
+            return $response = $next($request, $response);
         }
         
-        return $response;
     }
     
     /**
@@ -174,7 +175,8 @@ class IpRestrictMiddleware
         $message = 'Forbidden';
         switch ($contentType) {
             case 'application/json':
-                $message = array_key_exists('exception_message', $options) ? json_encode(['message' => $options['exception_message']], 0) : 'Forbidden';
+                $m = array_key_exists('exception_message', $options) ? $options['exception_message'] : 'Forbidden';
+                $message = json_encode(['message' => $m]);
                 break;
             
             case 'text/html':
@@ -188,6 +190,7 @@ class IpRestrictMiddleware
                 break;
             
             default:
+                $message = sprintf('%s', (array_key_exists('exception_message', $options) ? $options['exception_message'] : 'Forbidden'));
                 break;
         }
         return $message;
